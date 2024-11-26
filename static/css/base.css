@@ -83,6 +83,16 @@ html {
     }
 
     .header-container {
-        padding-top: 164px;
+        padding-top: 264px;
+    }
+}
+
+@media (max-width:991px) {
+    .header-name, .header-container {
+        padding-top: 216px;
+    }
+
+    body {
+        height: calc(100vh - 314px);
     }
 }
