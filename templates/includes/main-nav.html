@@ -28,10 +28,11 @@
                 Equipment
             </a>
             <div class="dropdown-menu border-0" aria-labelledby="equipment-link">
-                <a href="{% url 'products'%}?category=free_weights" class="dropdown-item">Free Weights</a>
-                <a href="{% url 'products'%}?category=home_muti_gym" class="dropdown-item">Home Multi-Gym</a>
+                <a href="{% url 'products'%}?category=weights" class="dropdown-item">Free Weights</a>
+                <a href="{% url 'products'%}?category=multi_gym" class="dropdown-item">Multi-Gym</a>
                 <a href="{% url 'products'%}?category=cardio" class="dropdown-item">Cardio</a>
-                <a href="{% url 'products'%}?category=free_weights,home_multi_gym,cardio" class="dropdown-item">All Equipment</a>
+                <a href="{% url 'products'%}?category=smart_tech" class="dropdown-item">Smart Tech</a>
+                <a href="{% url 'products'%}?category=weights,multi_gym,cardio,smart_tech" class="dropdown-item">All Equipment</a>
             </div>
         </li>
 
@@ -40,7 +41,6 @@
                 Special Offers
             </a>
             <div class="dropdown-menu border-0" aria-labelledby="specials-link">
-                <a href="{% url 'products'%}?category=new_arrivals" class="dropdown-item">New Arrivals</a>
                 <a href="{% url 'products'%}?category=deals" class="dropdown-item">Deals</a>
                 <a href="{% url 'products'%}?category=clearance" class="dropdown-item">Clearance</a>
                 <a href="{% url 'products'%}?category=new_arrivals,deals,clearance" class="dropdown-item">All Specials</a>
