@@ -3,16 +3,16 @@
         "pk": 1,
         "model": "products.category",
         "fields": {
-            "name": "activewear",
-            "friendly_name": "Activewear"
+            "name": "mens",
+            "friendly_name": "Mens "
         }
     },
     {
         "pk": 2,
         "model": "products.category",
         "fields": {
-            "name": "bed_bath",
-            "friendly_name": "Bed & Bath"
+            "name": "womens",
+            "friendly_name": "Womens"
         }
     },
     {
@@ -43,16 +43,16 @@
         "pk": 6,
         "model": "products.category",
         "fields": {
-            "name": "jeans",
-            "friendly_name": "Jeans"
+            "name": "multi_gym",
+            "friendly_name": "Multi Gym"
         }
     },
     {
         "pk": 7,
         "model": "products.category",
         "fields": {
-            "name": "kitchen_dining",
-            "friendly_name": "Kitchen & Dining"
+            "name": "free_weights",
+            "friendly_name": "Weights"
         }
     },
     {
@@ -67,8 +67,8 @@
         "pk": 9,
         "model": "products.category",
         "fields": {
-            "name": "shirts",
-            "friendly_name": "Shirts"
+            "name": "cardio",
+            "friendly_name": "Cardio"
         }
     }
 ]
