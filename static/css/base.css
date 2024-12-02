@@ -67,6 +67,24 @@ a.category-badge:hover .badge {
     color: white !important;
 }
 
+button#btn-back-to-top {
+    position: fixed !important;  /* Ensure it's fixed */
+    bottom: 30px !important;     /* Distance from the bottom */
+    right: 30px !important;      /* Distance from the right */
+    display: none !important;    /* Initially hidden */
+    z-index: 1000 !important;    /* Ensure it stays on top */
+    background: none !important; /* Remove background if needed */
+    border: none !important;     /* Remove any button border */
+    padding: 0 !important;       /* Remove padding if necessary */
+}
+
+button#btn-back-to-top i {
+    font-size: 24px !important;  /* Ensure the icon size is correct */
+    color: black !important;     /* Ensure the icon color is black */
+}
+
+
+
 
 
 
@@ -95,3 +113,9 @@ a.category-badge:hover .badge {
         padding-top: 164px;
     }
   }
+
+  @media (max-width: 992px) {
+    button#btn-back-to-top {
+        right: 20px !important;  /* Adjust the position for smaller screens */
+    }
+}
