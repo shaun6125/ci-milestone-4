@@ -112,10 +112,14 @@
             </div>
         </div>
     </div>
-    <div class="position-relative">
-        <button type="button" class="btn btn-warning btn-floating position-absolute bottom-0 end-0 btn-lg" id="btn-back-to-top">
-            <i class="fas fa-arrow-up text-black"></i>
-        </button>
+    <div class="container">
+        <div class="row justify-content-end">
+            <div class="col-1">
+                <button type="button" class="btn btn-warning btn-floating position-absolute bottom-0 end-0 btn-lg" id="btn-back-to-top">
+                    <i class="fas fa-arrow-up text-black"></i>
+                </button>
+            </div>
+        </div>
     </div>
     
     
@@ -123,6 +127,7 @@
 {% endblock %}
 {% block postloadjs %}
 {{ block.super }}
+
 <script type="text/javascript">
     // Show the button after scrolling down 200px
     $(window).scroll(function() {
