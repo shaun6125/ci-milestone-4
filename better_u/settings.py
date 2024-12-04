@@ -170,8 +170,13 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# stripe
+
 FREE_DELIVERY_THRESHOLD = 50
 STANDARD_DELIVERY_PERCENTAGE = 10
+STRIPE_CURRENCY = 'usd'
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = 'sk_test_51QS4VjL0mYyY9j8iJ7grVU7BLFibevHY3QTtNKVkFhncdIlZfLyP45iTpSLJnZMYitsvOvS6vfgFZ2lZ2xuggckr00T8SMdvHT'
 
 
 # Default primary key field type
