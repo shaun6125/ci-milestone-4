@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import environ
+import env
 from pathlib import Path
+
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w0po49iqj6tfq@-4*d_p*j^2ahhmre$%9p$or=n3!j9ynw+_7y'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -176,7 +180,7 @@ FREE_DELIVERY_THRESHOLD = 50
 STANDARD_DELIVERY_PERCENTAGE = 10
 STRIPE_CURRENCY = 'usd'
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
-STRIPE_SECRET_KEY = 'sk_test_51QS4VjL0mYyY9j8iJ7grVU7BLFibevHY3QTtNKVkFhncdIlZfLyP45iTpSLJnZMYitsvOvS6vfgFZ2lZ2xuggckr00T8SMdvHT'
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 
 
 # Default primary key field type
