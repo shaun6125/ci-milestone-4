@@ -1,1 +1,12 @@
 {% extends "allauth/layouts/manage.html" %}
+
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert alert-info">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+

@@ -1,13 +1,15 @@
 {% extends "account/base_entrance.html" %}
 {% load i18n %}
-{% load allauth account %}
+{% load allauth account crispy_forms_tags %}
 {% block head_title %}
     {% trans "Sign In" %}
 {% endblock head_title %}
+
 {% block inner_content %}
     {% element h1 %}
         {% trans "Sign In" %}
     {% endelement %}
+    
     {% if not SOCIALACCOUNT_ONLY %}
         {% setvar link %}
             <a href="{{ signup_url }}">
@@ -15,17 +17,25 @@
             {% setvar end_link %}
             </a>
         {% endsetvar %}
+        
         {% element p %}
             {% blocktranslate %}If you have not created an account yet, then please {{ link }}sign up{{ end_link }} first.{% endblocktranslate %}
         {% endelement %}
+        
         {% url 'account_login' as login_url %}
+        
         {% element form form=form method="post" action=login_url tags="entrance,login" %}
             {% slot body %}
                 {% csrf_token %}
-                {% element fields form=form unlabeled=True %}
-                {% endelement %}
+                
+                <!-- Use crispy_forms for form rendering -->
+                <div class="form-group">
+                    {{ form|crispy }}  <!-- This will render the form using crispy-forms styling -->
+                </div>
+
                 {{ redirect_field }}
             {% endslot %}
+            
             {% slot actions %}
                 {% element button type="submit" tags="prominent,login" %}
                     {% trans "Sign In" %}
@@ -33,6 +43,7 @@
             {% endslot %}
         {% endelement %}
     {% endif %}
+    
     {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
         {% element hr %}
         {% endelement %}
@@ -49,10 +60,12 @@
             {% endif %}
         {% endelement %}
     {% endif %}
+    
     {% if SOCIALACCOUNT_ENABLED %}
         {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
     {% endif %}
 {% endblock inner_content %}
+
 {% block extra_body %}
     {{ block.super }}
     {% if PASSKEY_LOGIN_ENABLED %}
