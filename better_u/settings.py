@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'bag',
     'profiles',
     'checkout',
+    'membership',
 
     # Other
     'crispy_forms',    
@@ -185,6 +186,7 @@ STRIPE_CURRENCY = 'usd'
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 STRIPE_WH_SECRET = os.getenv('STRIPE_WH_SECRET')
+STRIPE_WH_SECRET_MEMBERSHIP = os.getenv('STRIPE_WH_SECRET_MEMBERSHIP')
 DEFAULT_FROM_EMAIL = 'betteru@example.com'
 
 
