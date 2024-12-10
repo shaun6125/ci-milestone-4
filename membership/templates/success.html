@@ -1,13 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Thanks for your order!</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="client.js" defer></script>
-</head>
-<body>
-  <section>
+{% extends "base.html" %}
+{% load static %}
 
+{% block page_header %}
+    <div class="container header-container pb-5">
+        <div class="row">
+            <div class="col">
+                <!-- Any header content can go here -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+        <div class="col">
+          <hr>
+          <h2 class="logo-font mb-4">Thanks for your order!</h2>
+        </div>
+    </div>
+    
+   <script src="{% static 'client.js' %}" defer></script>
+
+  <section>
     <div class="product Box-root">
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14px" height="16px" viewBox="0 0 14 16" version="1.1">
           <defs/>
@@ -18,19 +34,30 @@
           </g>
       </svg>
       <div class="description Box-root">
-        <h3>Subscription to Starter plan successful!</h3>
+        
+        <div class=" card text-center">
+          <div class="card-header text-light bg-dark ">        
+          <h4>Subscription to Starter plan successful!</h4>
+          </div>
+          <div class=" card-body">
+            <p class= card-title>Session ID: {{ session_id }}</p>
+            <!-- Displaying User info -->
+            <div> User: {{ request.user.username }} </div>
+
+            <!-- Form to redirect the user to Stripe customer portal -->
+            <form action="{% url 'direct-to-customer-portal' %}" method="POST">
+              {% csrf_token %}
+              <input type="hidden" id="session-id" name="session_id" value="{{ request.GET.session_id }}" />
+              <button class="btn btn-dark mt-3" id="checkout-and-portal-button" type="submit">Manage your billing information</button>
+            </form>
+          </div>
+          <div class="card-footer text-center text-light bg-dark text-body-secondary">
+            <h4>Better Yourself Today!</h4>
+          </div>
+        
       </div>
     </div>
 
-      <div> User = {{request.user}} </div>
-
-<!--      Go to stripe customer portal to let user manage subscription. -->
-    <form action="{%  url  'direct-to-customer-portal' %}" method="POST">
-        {% csrf_token %}
-      <input type="hidden" id="session-id" name="session_id" value="" />
-      <button id="checkout-and-portal-button" type="submit">Manage your billing information</button>
-    </form>
+   
   </section>
-</body>
-</html>
-
+{% endblock %}

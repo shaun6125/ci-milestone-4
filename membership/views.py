@@ -3,19 +3,15 @@ import json
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
 import stripe
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from . import models
+from datetime import timedelta
 
-
-DOMAIN = "http://localhost:8000"  # Move this to your settings file or environment variable for production.
-stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-
-
-from django.contrib.auth import login
-from django.contrib.auth.models import User
+# Load environment variables from env.py
+DOMAIN = os.environ.get('STRIPE_DOMAIN', 'http://localhost:8000')  # Default to localhost if not set
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', 'your-default-stripe-secret-key')  # Set Stripe API key
 
 def membership(request) -> HttpResponse:
     # We login a sample user for the demo.
@@ -31,22 +27,28 @@ def membership(request) -> HttpResponse:
 
     return render(request, 'membership.html')
 
-
-
-
-
 def cancel(request) -> HttpResponse:
     return render(request, 'cancel.html')
 
-
 def success(request) -> HttpResponse:
+    # Capture the session ID from the URL query string
+    stripe_checkout_session_id = request.GET.get('session_id')
 
-    print(f'{request.session = }')
+    if not stripe_checkout_session_id:
+        return HttpResponse("Session ID is missing.", status=400)
 
-    stripe_checkout_session_id = request.GET['session_id']
+    try:
+        # Fetch the checkout session from Stripe using the session_id
+        checkout_session = stripe.checkout.Session.retrieve(stripe_checkout_session_id)
 
-    return render(request, 'success.html')
+        # Optionally, you can perform additional logic here, such as storing session details in your database.
 
+        # You can also render the success page with session details or user data
+        return render(request, 'success.html', {'session_id': stripe_checkout_session_id})
+    
+    except stripe.error.StripeError as e:
+        # Handle any Stripe-related errors
+        return HttpResponse(f"Stripe error: {str(e)}", status=500)
 
 def create_checkout_session(request) -> HttpResponse:
     price_lookup_key = request.POST['price_lookup_key']
@@ -54,17 +56,17 @@ def create_checkout_session(request) -> HttpResponse:
         prices = stripe.Price.list(lookup_keys=[price_lookup_key], expand=['data.product'])
         price_item = prices.data[0]
 
-        # Use 'subscription' for recurring payments (membership plans)
+        # Create a checkout session for a subscription
         checkout_session = stripe.checkout.Session.create(
             line_items=[
                 {'price': price_item.id, 'quantity': 1},
             ],
             mode='subscription',  # Use 'subscription' mode for memberships
-            success_url=DOMAIN + reverse('success') + '?session_id={CHECKOUT_SESSION_ID}',
+            success_url=DOMAIN + reverse('success') + '?session_id={CHECKOUT_SESSION_ID}',  # Success URL includes session ID
             cancel_url=DOMAIN + reverse('cancel')
         )
 
-        # We connect the checkout session to the user who initiated the checkout.
+        # Record the checkout session in the database for the current user
         models.CheckoutSessionRecord.objects.create(
             user=request.user,
             stripe_checkout_session_id=checkout_session.id,
@@ -78,9 +80,6 @@ def create_checkout_session(request) -> HttpResponse:
     except Exception as e:
         print(e)
         return HttpResponse("Server error", status=500)
-
-
-
 
 def direct_to_customer_portal(request) -> HttpResponse:
     """
@@ -98,28 +97,11 @@ def direct_to_customer_portal(request) -> HttpResponse:
     )
     return redirect(portal_session.url, code=303)
 
-
-def success(request) -> HttpResponse:
-    stripe_checkout_session_id = request.GET['session_id']
-
-    try:
-        # Fetch the checkout session from Stripe
-        checkout_session = stripe.checkout.Session.retrieve(stripe_checkout_session_id)
-        
-        # You can process the checkout session here if needed, like saving subscription details, etc.
-        
-        # Redirect the user to the homepage or membership page
-        return redirect('home')  # Replace 'home' with the URL name of your homepage
-    except stripe.error.StripeError as e:
-        # Handle any Stripe-related errors
-        return HttpResponse(f"Stripe error: {str(e)}", status=500)
-
-
 @csrf_exempt
 def collect_stripe_webhook(request) -> JsonResponse:
     """
     Stripe sends webhook events to this endpoint.
-    We verify the webhook signature and updates the database record.
+    We verify the webhook signature and update the database record.
     """
     webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET_MEMBERSHIP')
     signature = request.META["HTTP_STRIPE_SIGNATURE"]
@@ -138,7 +120,6 @@ def collect_stripe_webhook(request) -> JsonResponse:
 
     return JsonResponse({'status': 'success'})
 
-
 def _update_record(webhook_event) -> None:
     """
     We update our database record based on the webhook event.
@@ -150,11 +131,20 @@ def _update_record(webhook_event) -> None:
     event_type = webhook_event['type']
 
     if event_type == 'checkout.session.completed':
+        # Fetch the CheckoutSessionRecord associated with this session
         checkout_record = models.CheckoutSessionRecord.objects.get(
             stripe_checkout_session_id=data_object['id']
         )
+        
+        # Update the session record with the Stripe customer and subscription details
         checkout_record.stripe_customer_id = data_object['customer']
         checkout_record.has_access = True
+        checkout_record.is_completed = True
+        checkout_record.plan_name = data_object['line_items']['data'][0]['description']  # Plan name
+        checkout_record.start_date = data_object['created']  # Assuming the `created` field is when the subscription starts
+        # You may need to calculate the end date based on your subscription model, for example, a 30-day subscription
+        checkout_record.end_date = checkout_record.start_date + timedelta(days=30)  # Example of setting an end date
+        
         checkout_record.save()
         print('🔔 Payment succeeded!')
     elif event_type == 'customer.subscription.created':
@@ -162,9 +152,27 @@ def _update_record(webhook_event) -> None:
     elif event_type == 'customer.subscription.updated':
         print('✍️ Subscription updated')
     elif event_type == 'customer.subscription.deleted':
+        # Handle subscription cancellation (if necessary)
         checkout_record = models.CheckoutSessionRecord.objects.get(
             stripe_customer_id=data_object['customer']
         )
         checkout_record.has_access = False
         checkout_record.save()
         print('✋ Subscription canceled: %s', data_object.id)
+
+
+# New function to restrict access to exclusive content
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from membership import models  # Ensure this import is correct for your app
+
+@login_required
+def exclusive_content(request):
+    try:
+        subscription_record = models.CheckoutSessionRecord.objects.filter(user=request.user).last()
+        if subscription_record and subscription_record.has_access:
+            return render(request, 'exclusive_content.html')  # Show the exclusive content
+        else:
+            return redirect('membership')  # Redirect to membership if no access
+    except models.CheckoutSessionRecord.DoesNotExist:
+        return redirect('membership')  # Redirect to membership if no subscription record

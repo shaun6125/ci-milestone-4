@@ -1,14 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Checkout canceled</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <section>
-    <p>Picked the wrong subscription? Shop around then come back to pay!</p>
-  </section>
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
 
+{% block page_header %}
+    <div class="container header-container pb-5">
+        <div class="row">
+            <div class="col">
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
+{% block content %}
+  <div class="overlay"></div>
+  <div class="container">
+      <div class="row">
+          <div class="col">
+            <hr>
+            <h2 class="logo-font mb-4">Checkout Cancelled</h2>
+          </div>
+      </div>
+      <div class=" card text-center">
+        <div class="card-header text-light bg-dark ">        
+        <h4>Not sure if this is right for you? </h4>
+        </div>
+        <div class=" card-body">
+          <p class= card-title>Feel free to look around and come back when your ready.</p>
+          <!-- Form to redirect the user to Stripe customer portal -->
+          <a href="{% url 'home' %}">
+            <button class="btn btn-dark mt-3" id="checkout-and-portal-button" type="submit">Home</button>
+          </a>
+        </div>
+        <div class="card-footer text-center text-light bg-dark text-body-secondary">
+          <h4>Better Yourself Today!</h4>
+        </div>
+      </div>
+  </div>
+{% endblock %}

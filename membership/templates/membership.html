@@ -1,9 +1,27 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Subscribe for our lastest meal plans and workout plans</title>
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_header %}
+    <div class="container header-container pb-5">
+        <div class="row">
+            <div class="col">
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="overlay"></div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+          <hr>
+          <h2 class="logo-font mb-4">Subscribe for our lastest meal plans and workout plans</h2>
+        </div>
+    </div>
     <script src="https://js.stripe.com/v3/"></script>
-  </head>
+  
   <body>
     <header>
         <p>
@@ -13,36 +31,31 @@
     <section>
 
 <!--        Show product details-->
-      <div class="product">
-        <div class="description">
-          <h3>level 1 plans - beginner</h3>
-          <h5>$6.00 / month</h5>
+        <div class=" card text-center">
+          <div class="card-header text-light bg-dark ">
+            <h4>Subscribe</h4>
+          </div>
+          <div class=" card-body">
+            <h5 class= card-title span class="product"></h5>
+            <p class="card-text" span class="description"></p>
+              <h3>level 1 plans - beginner</h3>
+              <h5>$6.00 / month</h5>
+          </div>
+          <form class="checkout-form" action="{%  url 'create-checkout-session' %}" method="POST">
+            {% csrf_token %}
+  
+          <!-- Add a hidden field with the lookup_key of your stripe Price -->
+          <input type="hidden" name="price_lookup_key" value="standard_monthly" />
+          <button class="btn btn-dark mb-5" id="checkout-and-portal-button" type="submit">Checkout</button>
+        </form>
         </div>
-      </div>
+        <div class="card-footer text-center text-light bg-dark text-body-secondary">
+          <h4>Better Yourself Today!</h4>
+        </div>
+      
 
-<!--        Go to checkout button -->
-      <form class="checkout-form" action="{%  url 'create-checkout-session' %}" method="POST">
-          {% csrf_token %}
 
-        <!-- Add a hidden field with the lookup_key of your stripe Price -->
-        <input type="hidden" name="price_lookup_key" value="standard_monthly" />
-        <button id="checkout-and-portal-button" type="submit">Checkout</button>
-      </form>
     </section>
   </body>
-</html>
+{% endblock %}
 
-<style>
-    .product {
-        display: flex;
-        justify-content: center;
-        padding: 20px 10px;
-        border: 1px dashed lightgreen;
-    }
-    .checkout-form {
-        display: flex;
-        justify-content: center;
-        padding: 20px 10px;
-    }
-
-</style>
