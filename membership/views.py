@@ -11,7 +11,7 @@ from datetime import timedelta
 
 # Load environment variables from env.py
 DOMAIN = os.environ.get('STRIPE_DOMAIN', 'http://localhost:8000')  # Default to localhost if not set
-stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', 'your-default-stripe-secret-key')  # Set Stripe API key
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')  # Set Stripe API key
 
 def membership(request) -> HttpResponse:
     # We login a sample user for the demo.
@@ -103,7 +103,7 @@ def collect_stripe_webhook(request) -> JsonResponse:
     Stripe sends webhook events to this endpoint.
     We verify the webhook signature and update the database record.
     """
-    webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET_MEMBERSHIP')
+    webhook_secret = os.environ.get('STRIPE_WH_SECRET_MEMBERSHIP')
     signature = request.META["HTTP_STRIPE_SIGNATURE"]
     payload = request.body
 
@@ -141,17 +141,17 @@ def _update_record(webhook_event) -> None:
         checkout_record.has_access = True
         checkout_record.is_completed = True
         checkout_record.plan_name = data_object['line_items']['data'][0]['description']  # Plan name
-        checkout_record.start_date = data_object['created']  # Assuming the `created` field is when the subscription starts
+        checkout_record.start_date = data_object['payment_succeeded']  # Assuming the `created` field is when the subscription starts
         # You may need to calculate the end date based on your subscription model, for example, a 30-day subscription
         checkout_record.end_date = checkout_record.start_date + timedelta(days=30)  # Example of setting an end date
         
         checkout_record.save()
         print('🔔 Payment succeeded!')
-    elif event_type == 'customer.subscription.created':
+    elif event_type == 'customer.invoice.payment_succeeded':
         print('🎟️ Subscription created')
-    elif event_type == 'customer.subscription.updated':
+    elif event_type == 'customer.invoice.updated':
         print('✍️ Subscription updated')
-    elif event_type == 'customer.subscription.deleted':
+    elif event_type == 'customer.invoice.deleted':
         # Handle subscription cancellation (if necessary)
         checkout_record = models.CheckoutSessionRecord.objects.get(
             stripe_customer_id=data_object['customer']
@@ -160,19 +160,15 @@ def _update_record(webhook_event) -> None:
         checkout_record.save()
         print('✋ Subscription canceled: %s', data_object.id)
 
+def update_subscription_status(user, checkout_session):
+    # Find or create the CheckoutSessionRecord related to the user
+    record, created = CheckoutSessionRecord.objects.get_or_create(user=user, session_id=checkout_session.id)
+    
+    # Set the access flag to True after payment is confirmed
+    if checkout_session.status == 'paid':  # Example condition
+        record.has_access = True
+        record.save()
 
-# New function to restrict access to exclusive content
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from membership import models  # Ensure this import is correct for your app
 
-@login_required
-def exclusive_content(request):
-    try:
-        subscription_record = models.CheckoutSessionRecord.objects.filter(user=request.user).last()
-        if subscription_record and subscription_record.has_access:
-            return render(request, 'exclusive_content.html')  # Show the exclusive content
-        else:
-            return redirect('membership')  # Redirect to membership if no access
-    except models.CheckoutSessionRecord.DoesNotExist:
-        return redirect('membership')  # Redirect to membership if no subscription record
+
+

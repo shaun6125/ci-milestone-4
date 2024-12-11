@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from membership import views
+
 
 
 
@@ -30,12 +30,6 @@ urlpatterns = [
     path('bag/', include('bag.urls')),
     path('checkout/', include('checkout.urls')),
     path('profile/', include('profiles.urls')),
-    path('membership/', views.membership, name='membership'),
-    path('cancel/', views.cancel, name='cancel'),
-    path('success/', views.success, name='success'),
-    path('exclusive-content/', views.exclusive_content, name='exclusive_content'),
-    path('create-checkout-session/', views.create_checkout_session, name='create-checkout-session'),
-    path('direct-to-customer-portal/', views.direct_to_customer_portal, name='direct-to-customer-portal'),
-    path('collect-stripe-webhook/', views.collect_stripe_webhook, name='collect-stripe-webhook'),
+    path('membership/', include('membership.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

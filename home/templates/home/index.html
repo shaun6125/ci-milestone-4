@@ -16,7 +16,7 @@
         <div class="row h-100">
             <div class="col-7 col-md-6 my-auto">
                 <h1 class="display-4 logo-font text-black">
-                    The new collections are here
+                    All your fitness needs
                 </h1>
                 <div class="my-5">
                     <h4>
@@ -30,6 +30,51 @@
 
         </div>
 
+        <div class=" card text-center mt-5">
+            <div class="card-header text-light bg-dark ">        
+            <h4>Subscribe for workout plans and meal plans</h4>
+            </div>
+            <div class=" card-body">
+                   <!-- Displaying User info -->
+              <div> User: {{ request.user.username }} </div>
+              <p>Click bellow to start your subscription for just $6.00p/m and let us Better U, we have a full set of workout plans available and
+                 meal plans to ensure you hit your goals, be it, weight loss, weight gain, muscle mass etc. What are you waiting for - Sign up Now!!
+              </p>
+  
+              <!-- Form to redirect the user to Stripe customer portal -->
+              <form action="{% url 'membership' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="session-id" name="session_id" value="{{ request.GET.session_id }}" />
+                <button class="btn btn-dark mt-3" id="checkout-and-portal-button" type="submit">Subscribe</button>
+              </form>
+            </div>
+            <div class="card-footer text-center text-light bg-dark text-body-secondary">
+              <h4>Better Yourself Today!</h4>
+            </div>
+          
+        </div>
+
     </div>
+    {% if user.has_access %}
+        <p>Has Access: {{ last_record.has_access }}</p> <!-- Debug output -->
+        
+        
+        {% if last_record and last_record.has_access %}
+            <div class="container h-100 pt-5">
+                <div class="row h-100">
+                    <div class="col-7 col-md-6 my-auto">
+                        <h1 class="display-4 logo-font text-black">
+                            here are the workout plans. ( this is a test and an unfortunate bug i cant resolve before the deadline)
+                        </h1>                        
+                    </div>
+                    <div class="col-5 col-md-6 my-auto">
+                        <img src="/media/homepage_background.jpeg" class="img-fluid" style="background-image">
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     
+{% endif %}
+
+
 {% endblock %}

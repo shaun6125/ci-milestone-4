@@ -85,18 +85,12 @@
                             <a href="{% url 'add_product' %}" class="dropdown-item">Product Management</a>
                             {% endif %}
                             <a href="{% url 'profile' %}" class="dropdown-item">My Profile</a>
+                            <a href="{% url 'membership' %}" class="dropdown-item">Membership</a>
                             <a href="{% url 'account_logout' %}" class="dropdown-item">Logout</a>
                             {% else %}
                             <a href="{% url 'account_signup' %}" class="dropdown-item">Register</a>
                             <a href="{% url 'account_login' %}" class="dropdown-item">Login</a>
-                            {% endif %}
-                            {% if user.is_authenticated %}
-                            {% if user.checkoutsessionrecord_set.last.has_access %}
-                            <a href="exclusive_content" class="dropdown-item">exclusive
-                            {% else %}
-                            <a href="#" class="dropdown-item">exclusive
-                            {% endif %}
-                            {% endif %}
+                            {% endif %}                            
                         </div>
                     </li>
                     <li class="list-inline-item">
@@ -159,6 +153,8 @@
     {% endblock %}
 
     {% block content %}
+        
+    
     {% endblock %}
 
     {% block postloadjs %}
@@ -171,5 +167,40 @@
 
 
 </body>
+<footer class="border-top mt-5">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <ul class="list-inline text-center">
+                    <li class="list-inline-item">
+                        <a href="#!">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-twitter fa-stack-1x fa-inverse bg-dark"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#!">
+                            <span class="fa-stack fa-lg ">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-facebook-f fa-stack-1x fa-inverse bg-dark"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#!">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse bg-dark"></i>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="small text-center text-muted fst-italic">Copyright &copy; Better U 2024</div>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </html>
