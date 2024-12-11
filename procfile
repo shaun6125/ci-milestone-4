@@ -1,1 +1,1 @@
-web: gunicorn ci-milestone-4.wsgi:application
+web: gunicorn betteru.wsgi:application
