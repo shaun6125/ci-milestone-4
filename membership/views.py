@@ -15,9 +15,10 @@ stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')  # Set Stripe API key
 
 def membership(request) -> HttpResponse:
     # We login a sample user for the demo.
-    user, created = User.objects.get_or_create(
-        username='Shaun', email="craven6622@googlemail.com"
-    )
+    user = request.user
+    if not user.is_authenticated:
+        return redirect('account_login')  # Or some other view
+
     if created:
         user.set_password('password')
         user.save()
