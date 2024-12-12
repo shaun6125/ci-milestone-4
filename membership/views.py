@@ -19,10 +19,6 @@ def membership(request) -> HttpResponse:
     if not user.is_authenticated:
         return redirect('account_login')  # Or some other view
 
-    if created:
-        user.set_password('password')
-        user.save()
-
     # Log the user in and explicitly specify the backend
     login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # Specify the backend here
 
